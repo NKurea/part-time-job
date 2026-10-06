@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="ja">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+	<title>バイト管理</title>
+	<meta name="description" content="Googleカレンダーの予定から給与見込と労働時間を表示するアルバイト管理アプリ" />
+	<meta name="theme-color" content="#fbf7f4" media="(prefers-color-scheme: light)" />
+	<meta name="theme-color" content="#16171b" media="(prefers-color-scheme: dark)" />
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="mobile-web-app-capable" content="yes" />
+	<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+	<meta name="apple-mobile-web-app-title" content="バイト管理" />
+	<link rel="manifest" href="manifest.webmanifest" />
+	<link rel="icon" href="icons/icon.svg" type="image/svg+xml" />
+	<link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+	<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+	<header class="app-header">
+		<h1>バイト管理</h1>
+		<div class="header-actions">
+			<button id="syncBtn" class="icon-btn" aria-label="Googleカレンダーと同期">
+				<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 0 1-14.3 4.9M4 12a8 8 0 0 1 14.3-4.9M18.5 3v4.2h-4.2M5.5 21v-4.2h4.2" /></svg>
+			</button>
+			<button id="settingsBtn" class="icon-btn" aria-label="設定">
+				<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z" /></svg>
+			</button>
+		</div>
+	</header>
+
+	<main id="app">
+		<div id="reminder"></div>
+
+		<div class="segmented" role="tablist">
+			<button role="tab" data-view="month" aria-selected="true">月別</button>
+			<button role="tab" data-view="year" aria-selected="false">年間</button>
+		</div>
+
+		<nav class="period-nav">
+			<button id="prevBtn" class="icon-btn" aria-label="前へ">
+				<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" /></svg>
+			</button>
+			<button id="periodLabel" class="period-label" aria-label="今月に戻る"></button>
+			<button id="nextBtn" class="icon-btn" aria-label="次へ">
+				<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" /></svg>
+			</button>
+		</nav>
+
+		<div id="content"></div>
+		<p id="syncStatus" class="sync-status"></p>
+	</main>
+
+	<dialog id="settings" class="sheet">
+		<form method="dialog" class="sheet-head">
+			<h2>設定</h2>
+			<button class="text-btn" value="close">閉じる</button>
+		</form>
+		<div class="sheet-body">
+			<section>
+				<h3>Googleカレンダー連携</h3>
+				<p class="hint">タイトルに「千疋屋」「学童」を含む予定をアルバイトとして集計します。初回のみ OAuth クライアント ID の設定が必要です（<a href="https://github.com/NKurea/Beaute-raffinee/blob/main/baito/README.md" target="_blank" rel="noopener">設定手順</a>）。</p>
+				<label class="field">
+					<span>OAuth クライアント ID</span>
+					<input id="clientIdInput" type="text" inputmode="url" autocomplete="off" spellcheck="false" placeholder="xxxx.apps.googleusercontent.com" />
+				</label>
+				<div class="btn-row">
+					<button id="saveClientIdBtn" class="btn primary">保存して同期</button>
+					<button id="signOutBtn" class="btn">ログアウト</button>
+				</div>
+			</section>
+
+			<section>
+				<h3>シフト希望リマインド（千疋屋）</h3>
+				<p class="hint">毎月 <strong>5日・20日</strong> にシフト希望の提出をリマインドします。スマホに通知を届けるには、カレンダーへの登録がおすすめです。</p>
+				<p class="next-reminder" id="nextReminder"></p>
+				<label class="field inline">
+					<span>通知時刻</span>
+					<input id="reminderTime" type="time" value="09:00" />
+				</label>
+				<div class="btn-stack">
+					<button id="addGcalReminderBtn" class="btn primary">Googleカレンダーに登録</button>
+					<button id="downloadIcsBtn" class="btn">.ics をダウンロード（iPhone向け）</button>
+					<button id="notifyBtn" class="btn">アプリを開いたときの通知を許可</button>
+				</div>
+			</section>
+
+			<section>
+				<h3>給与ルール</h3>
+				<div id="rules"></div>
+			</section>
+
+			<section>
+				<h3>データ</h3>
+				<button id="clearCacheBtn" class="btn danger">保存したデータを削除</button>
+			</section>
+		</div>
+	</dialog>
+
+	<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+	<script src="calc.js"></script>
+	<script src="app.js"></script>
+</body>
+</html>
