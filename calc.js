@@ -12,7 +12,7 @@
     {
       id: 'senbikiya',
       name: '千疋屋',
-      keywords: ['千疋屋'],
+      keywords: ['千疋屋', 'バイト'], // 「バイト」も千疋屋として扱う
       color: '#d9536f',
       rates: [
         { to: '2026-08-31', rate: 1300 },

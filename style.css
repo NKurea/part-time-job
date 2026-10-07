@@ -45,7 +45,7 @@ body {
 	margin: 0;
 	background: var(--bg);
 	color: var(--text);
-	font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic UI", Meiryo, sans-serif;
+	font-family: "Noto Sans JP", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic UI", Meiryo, sans-serif;
 	font-size: 15px;
 	line-height: 1.5;
 	-webkit-tap-highlight-color: transparent;

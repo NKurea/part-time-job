@@ -66,6 +66,15 @@ test('交通費は同日2回でも1日分', () => {
   assert.strictEqual(C.summarize(sh).total.transport, 1000);
 });
 
+test('「バイト」は千疋屋として扱う', () => {
+  const sh = C.toShifts([ev('a', 'バイト', '2026-10-01T10:00', '2026-10-01T16:30')], now);
+  assert.strictEqual(sh.length, 1);
+  assert.strictEqual(sh[0].jobId, 'senbikiya');
+  assert.strictEqual(sh[0].breakMin, 45);
+  assert.strictEqual(sh[0].wage, Math.floor(345 * 1350 / 60));
+  assert.strictEqual(sh[0].transport, 1000);
+});
+
 test('対象外の予定（終日・無関係・リマインド）', () => {
   const sh = C.toShifts([
     { id: 'x', summary: '千疋屋', start: { date: '2026-10-01' }, end: { date: '2026-10-02' } },

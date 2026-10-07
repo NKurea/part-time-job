@@ -1,5 +1,6 @@
 // バイト管理 Service Worker — アプリ本体をキャッシュしてオフラインでも開けるようにする
-var CACHE = 'baito-v1';
+var CACHE = 'baito-v2';
+var FONT_CACHE = 'baito-fonts-v1';
 var SHELL = [
 	'./',
 	'index.html',
@@ -18,14 +19,27 @@ self.addEventListener('install', function (e) {
 
 self.addEventListener('activate', function (e) {
 	e.waitUntil(caches.keys().then(function (keys) {
-		return Promise.all(keys.filter(function (k) { return k !== CACHE; }).map(function (k) { return caches.delete(k); }));
+		return Promise.all(keys.filter(function (k) { return k !== CACHE && k !== FONT_CACHE; }).map(function (k) { return caches.delete(k); }));
 	}).then(function () { return self.clients.claim(); }));
 });
 
 // 同一オリジンのみ：ネットワーク優先、オフライン時はキャッシュ
 self.addEventListener('fetch', function (e) {
 	var req = e.request;
-	if (req.method !== 'GET' || new URL(req.url).origin !== self.location.origin) return;
+	var url = new URL(req.url);
+	// Google Fonts（Noto Sans JP）はキャッシュ優先でオフラインでも表示
+	if (req.method === 'GET' && (url.host === 'fonts.googleapis.com' || url.host === 'fonts.gstatic.com')) {
+		e.respondWith(caches.open(FONT_CACHE).then(function (c) {
+			return c.match(req).then(function (hit) {
+				return hit || fetch(req).then(function (res) {
+					if (res.ok || res.type === 'opaque') c.put(req, res.clone());
+					return res;
+				});
+			});
+		}));
+		return;
+	}
+	if (req.method !== 'GET' || url.origin !== self.location.origin) return;
 	e.respondWith(fetch(req).then(function (res) {
 		if (res.ok) {
 			var copy = res.clone();
