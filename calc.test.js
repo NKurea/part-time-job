@@ -1,4 +1,4 @@
-// 実行: TZ=Asia/Tokyo node --test baito/calc.test.js
+// 実行: TZ=Asia/Tokyo node --test calc.test.js
 'use strict';
 const test = require('node:test');
 const assert = require('node:assert');

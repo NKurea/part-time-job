@@ -46,10 +46,10 @@ Googleカレンダーの予定からアルバイトを抽出し、**給与見込
 使用する権限：予定の読み取り（`calendar.events.readonly`）。リマインドを Googleカレンダーに登録するときだけ書き込み権限（`calendar.events`）を求めます。
 
 ## 公開方法
-GitHub Pages を有効にすると `https://nkurea.github.io/Beaute-raffinee/baito/` で開けます。
+GitHub Pages を有効にすると `https://nkurea.github.io/part-time-job/` で開けます。
 スマホで開き、Safari なら「共有 → ホーム画面に追加」、Chrome なら「ホーム画面に追加」でアプリとして使えます。
 
 ## テスト
 ```sh
-TZ=Asia/Tokyo node --test baito/calc.test.js
+TZ=Asia/Tokyo node --test calc.test.js
 ```
