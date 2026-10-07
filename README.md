@@ -45,6 +45,22 @@ Googleカレンダーの予定からアルバイトを抽出し、**給与見込
 
 使用する権限：予定の読み取り（`calendar.events.readonly`）。リマインドを Googleカレンダーに登録するときだけ書き込み権限（`calendar.events`）を求めます。
 
+## うまくいかないとき
+
+**「アクセスをブロック: 認証エラーです」「The OAuth client was not found」「エラー 401: invalid_client」**
+アプリに保存したクライアント ID が Google に見つからない状態です。
+
+- 「認証情報」→「OAuth 2.0 クライアント ID」の一覧にある **クライアント ID**（`123456789012-xxxx.apps.googleusercontent.com` の形）を、右のコピーボタンで丸ごとコピーして貼り直す
+  - 「クライアント シークレット」（`GOCSPX-` で始まる）やプロジェクト ID ではありません
+- クライアントを削除・作り直した場合は、新しい ID に貼り替える
+- 作成直後は反映まで数分かかることがあるので、少し待ってから再度試す
+
+**「エラー 400: redirect_uri_mismatch」/「origin_mismatch」**
+「承認済みの JavaScript 生成元」にアプリを開いている URL のオリジン（例：`https://nkurea.github.io`、末尾の `/` やパスは付けない）を追加してください。
+
+**「アクセスをブロック: … は Google の審査プロセスを完了していません」（403: access_denied）**
+「OAuth 同意画面」→「対象」のテストユーザーに、ログインする Gmail アドレスを追加してください。
+
 ## 公開方法
 GitHub Pages を有効にすると `https://nkurea.github.io/part-time-job/` で開けます。
 スマホで開き、Safari なら「共有 → ホーム画面に追加」、Chrome なら「ホーム画面に追加」でアプリとして使えます。

@@ -53,7 +53,7 @@
 		t.textContent = msg;
 		t.classList.add('show');
 		clearTimeout(toastTimer);
-		toastTimer = setTimeout(function () { t.classList.remove('show'); }, 3200);
+		toastTimer = setTimeout(function () { t.classList.remove('show'); }, Math.max(3200, msg.length * 90));
 	}
 
 	// ---- data --------------------------------------------------------------
@@ -572,9 +572,15 @@
 		}, { passive: true });
 
 		$('saveClientIdBtn').addEventListener('click', function () {
-			var v = $('clientIdInput').value.trim();
+			// コピー時に混ざりやすい空白・改行・引用符を取り除く
+			var v = $('clientIdInput').value.replace(/[\s\u200B-\u200D\uFEFF"'「」]/g, '');
+			$('clientIdInput').value = v;
+			if (!v) { save('clientId', ''); toast('クライアント ID を削除しました'); return; }
+			if (!/^\d+-[a-z0-9]+\.apps\.googleusercontent\.com$/.test(v)) {
+				toast('クライアント ID の形式が違います。「数字-英数字.apps.googleusercontent.com」の形の値を貼り付けてください（クライアント シークレットではありません）');
+				return;
+			}
 			save('clientId', v);
-			if (!v) { toast('クライアント ID を削除しました'); return; }
 			loadGis().then(function () {
 				$('settings').close();
 				sync();
